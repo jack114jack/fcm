@@ -185,8 +185,6 @@ class FCM
     build_response(response)
   end
 
-
-
   def send_to_topic(topic, options = {})
     if topic.gsub(TOPIC_REGEX, "").length == 0
       send_with_notification_key('/topics/' + topic, options)
@@ -198,6 +196,23 @@ class FCM
       body = { condition: condition }.merge(options)
       execute_notification(body)
     end
+  end
+
+  # Verifies the token was registered or not
+  def valid_token?(registration_id)
+    post_body = build_post_body(registration_id)
+
+    params = {
+      body: post_body.to_json,
+      headers: {
+        'Authorization' => "key=#{@api_key}",
+        'Content-Type' => 'application/json'
+      }
+    }
+    response = self.class.post('/fcm/send', params.merge(@client_options))
+    body = response.body || {}
+    body = JSON.parse(body) unless body.empty?
+    body["success"].to_i != 0
   end
 
   private
