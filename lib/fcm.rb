@@ -209,7 +209,7 @@ class FCM
         'Content-Type' => 'application/json'
       }
     }
-    response = self.class.post('/fcm/send', params.merge(@client_options))
+    response = self.class.post('/send', params.merge(@client_options))
     body = response.body || {}
     body = JSON.parse(body) unless body.empty?
     body["success"].to_i != 0
